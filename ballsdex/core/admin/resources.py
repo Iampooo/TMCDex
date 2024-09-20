@@ -107,6 +107,7 @@ class SpecialResource(Model):
         ),
         "emoji",
         "tradeable",
+        # "mergeable",
     ]
 
     async def get_actions(self, request: Request) -> List[Action]:
@@ -178,6 +179,7 @@ class BallResource(Model):
         filters.ForeignKey(model=Economy, name="economy", label="Economy"),
         filters.Boolean(name="enabled", label="Enabled"),
         filters.Boolean(name="tradeable", label="Tradeable"),
+        # filters.Boolean(name="mergeable", label="Mergeable"),
     ]
     fields = [
         "country",
@@ -191,6 +193,7 @@ class BallResource(Model):
         "rarity",
         "enabled",
         "tradeable",
+        # "mergeable",
         Field(
             name="emoji_id",
             label="Emoji ID",
@@ -264,6 +267,7 @@ class BallInstanceResource(Model):
             placeholder="Search for Discord server ID",
         ),
         filters.Boolean(name="tradeable", label="Tradeable"),
+        # filters.Boolean(name="mergeable", label="Mergeable"),
     ]
     fields = [
         "id",
@@ -277,6 +281,7 @@ class BallInstanceResource(Model):
         "health_bonus",
         "attack_bonus",
         "tradeable",
+        # "mergeable",
     ]
 
 

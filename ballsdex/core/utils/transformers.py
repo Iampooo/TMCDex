@@ -49,6 +49,16 @@ class TradeCommandType(Enum):
     REMOVE = 1
 
 
+class MergeCommandType(Enum):
+    """
+    If a command is using `BallInstanceTransformer` for merging purposes, it should define this
+    enum to filter out values.
+    """
+
+    PICK = 0
+    REMOVE = 1
+
+
 class ValidationError(Exception):
     """
     Raised when an autocomplete result is forbidden and should raise a user message.
@@ -170,6 +180,18 @@ class BallInstanceTransformer(ModelTransformer[BallInstance]):
 
         if interaction.command and (trade_type := interaction.command.extras.get("trade", None)):
             if trade_type == TradeCommandType.PICK:
+                balls_queryset = balls_queryset.filter(
+                    Q(
+                        Q(locked__isnull=True)
+                        | Q(locked__lt=tortoise_now() + timedelta(minutes=30))
+                    )
+                )
+            else:
+                balls_queryset = balls_queryset.filter(
+                    locked__isnull=False, locked__gt=tortoise_now() - timedelta(minutes=30)
+                )
+        if interaction.command and (merge_type := interaction.command.extras.get("merge", None)):
+            if merge_type == MergeCommandType.PICK:
                 balls_queryset = balls_queryset.filter(
                     Q(
                         Q(locked__isnull=True)

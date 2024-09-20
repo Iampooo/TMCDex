@@ -122,7 +122,7 @@ class SpawnManager:
 
         # at this point, the goal is reached
         if delta < 600:
-            # wait for at least 10 minutes before spawning
+            # wait for at least 1 minutes before spawning
             return
 
         # spawn countryball

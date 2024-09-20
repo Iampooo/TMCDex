@@ -129,6 +129,12 @@ class Ball(models.Model):
     rarity = fields.FloatField(description="Rarity of this ball")
     enabled = fields.BooleanField(default=True)
     tradeable = fields.BooleanField(default=True)
+    mergeable = fields.BooleanField(default=False)
+    recipe = fields.TextField(
+        null=True,
+        default=None,
+        description="List the ingredients to merge this ball, separated by semicolons. Remains empty if not mergeable.",
+    )
     emoji_id = fields.BigIntField(
         description="Emoji ID for this ball", validators=[DiscordSnowflakeValidator()]
     )
@@ -355,6 +361,10 @@ class BallInstance(models.Model):
         self.locked
         return self.locked is not None and (self.locked + timedelta(minutes=30)) > timezone.now()
 
+    async def lock_for_merge(self):
+        self.locked = timezone.now()
+        await self.save(update_fields=("locked",))
+
 
 class DonationPolicy(IntEnum):
     ALWAYS_ACCEPT = 1
@@ -436,6 +446,35 @@ class TradeObject(models.Model):
     )
     player: fields.ForeignKeyRelation[Player] = fields.ForeignKeyField(
         "models.Player", related_name="tradeobjects"
+    )
+
+    def __str__(self) -> str:
+        return str(self.pk)
+
+
+class Merge(models.Model):
+    id: int
+    player1: fields.ForeignKeyRelation[Player] = fields.ForeignKeyField(
+        "models.Player", related_name="merges"
+    )
+    date = fields.DatetimeField(auto_now_add=True)
+    mergeobjects: fields.ReverseRelation[MergeObject]
+
+    def __str__(self) -> str:
+        return str(self.pk)
+
+
+class MergeObject(models.Model):
+    merge_id: int
+
+    merge: fields.ForeignKeyRelation[Merge] = fields.ForeignKeyField(
+        "models.Merge", related_name="mergeobjects"
+    )
+    ballinstance: fields.ForeignKeyRelation[BallInstance] = fields.ForeignKeyField(
+        "models.BallInstance", related_name="mergeobjects"
+    )
+    player: fields.ForeignKeyRelation[Player] = fields.ForeignKeyField(
+        "models.Player", related_name="mergeobjects"
     )
 
     def __str__(self) -> str:

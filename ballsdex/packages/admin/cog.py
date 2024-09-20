@@ -36,6 +36,8 @@ from ballsdex.core.utils.transformers import (
 from ballsdex.packages.countryballs.countryball import CountryBall
 from ballsdex.packages.trade.display import TradeViewFormat, fill_trade_embed_fields
 from ballsdex.packages.trade.trade_user import TradingUser
+from ballsdex.packages.merge.display import MergeViewFormat, fill_merge_embed_fields
+from ballsdex.packages.merge.merge_user import MergingUser
 from ballsdex.settings import settings
 
 if TYPE_CHECKING:
@@ -1043,6 +1045,7 @@ class Admin(commands.GroupCog):
         rarity: float = 0.0,
         enabled: bool = False,
         tradeable: bool = False,
+        # mergeable: bool = False,
         wild_card: discord.Attachment | None = None,
     ):
         """
@@ -1126,6 +1129,7 @@ class Admin(commands.GroupCog):
                 rarity=rarity,
                 enabled=enabled,
                 tradeable=tradeable,
+                # mergeable=mergeable,
                 emoji_id=emoji_id,
                 wild_card="/" + str(wild_card_path),
                 collection_card="/" + str(collection_card_path),
